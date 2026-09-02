@@ -1,0 +1,828 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>The Software Factory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500;6..72,600&display=swap">
+
+<style>
+:root {
+  --ground:      #F2F1EE;
+  --surface:     #FBFAF8;
+  --surface-2:   #E8E6E1;
+  --ink:         #17191C;
+  --ink-2:       #4A4E54;
+  --ink-3:       #7C8087;
+  --rule:        #D6D3CC;
+  --rule-hard:   #B6B2A9;
+  --accent:      #B87A08;
+  --rust:        #9C3A24;
+  --steel:       #35636A;
+
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "Newsreader", Georgia, "Times New Roman", serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --measure: 65ch;
+  --pad: clamp(20px, 5vw, 64px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:      #101215;
+    --surface:     #181B1F;
+    --surface-2:   #22262B;
+    --ink:         #E9E7E2;
+    --ink-2:       #ABAFB5;
+    --ink-3:       #767B82;
+    --rule:        #2C3137;
+    --rule-hard:   #414750;
+    --accent:      #E5A62F;
+    --rust:        #D9705A;
+    --steel:       #79B0B4;
+  }
+}
+:root[data-theme="dark"] {
+  --ground:      #101215;
+  --surface:     #181B1F;
+  --surface-2:   #22262B;
+  --ink:         #E9E7E2;
+  --ink-2:       #ABAFB5;
+  --ink-3:       #767B82;
+  --rule:        #2C3137;
+  --rule-hard:   #414750;
+  --accent:      #E5A62F;
+  --rust:        #D9705A;
+  --steel:       #79B0B4;
+}
+
+* { box-sizing: border-box; }
+
+html { color-scheme: light dark; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 var(--pad) 96px; }
+
+h1, h2, h3, h4, .lbl { font-family: var(--display); text-wrap: balance; }
+
+.lbl {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--ink-3);
+}
+
+p { max-width: var(--measure); }
+a { color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+code, .mono { font-family: var(--mono); font-size: 0.86em; }
+code {
+  background: var(--surface-2); padding: 0.1em 0.36em;
+  border-radius: 2px; color: var(--ink);
+}
+
+/* ---------- masthead ---------- */
+.mast { padding: clamp(40px, 7vw, 84px) 0 0; }
+.mast .kicker {
+  display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: baseline;
+  font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-3);
+  border-bottom: 1px solid var(--rule); padding-bottom: 14px;
+}
+.mast .kicker b { color: var(--accent); font-weight: 600; }
+
+h1 {
+  font-size: clamp(46px, 9.5vw, 108px);
+  font-weight: 800; line-height: 0.92; letter-spacing: -0.028em;
+  margin: 30px 0 0; max-width: 15ch;
+}
+h1 em { font-style: normal; color: var(--accent); }
+
+.standfirst {
+  font-size: clamp(19px, 2.1vw, 24px); line-height: 1.48;
+  color: var(--ink-2); font-weight: 300; margin: 26px 0 0; max-width: 58ch;
+}
+.standfirst b { color: var(--ink); font-weight: 500; }
+
+/* ---------- output strip ---------- */
+.output {
+  display: grid; gap: 1px; margin: 44px 0 0;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  background: var(--rule); border-block: 1px solid var(--rule);
+}
+.output div { background: var(--ground); padding: 18px 16px 16px; }
+.output .n {
+  font-family: var(--display); font-weight: 700; font-size: clamp(28px, 3.6vw, 40px);
+  letter-spacing: -0.02em; line-height: 1; font-variant-numeric: tabular-nums;
+}
+.output .k {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--ink-3); margin-top: 9px; line-height: 1.4;
+}
+
+/* ---------- sections ---------- */
+section { margin-top: clamp(56px, 8vw, 96px); }
+.shead {
+  display: flex; align-items: baseline; gap: 16px;
+  border-bottom: 2px solid var(--ink); padding-bottom: 10px; margin-bottom: 30px;
+}
+.shead h2 {
+  font-size: clamp(24px, 3.2vw, 34px); font-weight: 700;
+  letter-spacing: -0.018em; margin: 0; flex: 1;
+}
+.shead .lbl { flex: none; }
+
+h3 { font-size: 19px; font-weight: 700; letter-spacing: -0.005em; margin: 38px 0 10px; }
+
+.note {
+  font-family: var(--mono); font-size: 12.5px; line-height: 1.62;
+  color: var(--ink-2); max-width: 78ch;
+}
+
+/* ---------- lifecycle figure ---------- */
+.fig {
+  overflow-x: auto; border: 1px solid var(--rule); background: var(--surface);
+  padding: 22px 20px; margin: 30px 0 36px;
+}
+.fig svg { display: block; min-width: 940px; height: auto; }
+.fig-cap {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--ink-3); margin: 0 0 16px; max-width: none;
+}
+
+/* ---------- layer stack ---------- */
+.stack { display: flex; flex-direction: column; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+.layer { background: var(--surface); display: grid; grid-template-columns: 62px minmax(0, 1fr); }
+.layer > .idx {
+  background: var(--surface-2); padding: 18px 0 0;
+  text-align: center; font-family: var(--display); font-weight: 800;
+  font-size: 20px; color: var(--accent); font-variant-numeric: tabular-nums;
+  border-right: 1px solid var(--rule);
+}
+.layer > .lbody { padding: 16px 22px 20px; min-width: 0; }
+.layer h3 { margin: 0 0 4px; font-size: 18px; }
+.layer .who {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 10px;
+}
+.layer .who b { color: var(--rust); font-weight: 600; }
+.layer .who i { font-style: normal; color: var(--steel); font-weight: 600; }
+.layer p { margin: 0 0 10px; font-size: 16px; max-width: 74ch; }
+.layer p:last-child { margin-bottom: 0; }
+.arts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.arts span {
+  font-family: var(--mono); font-size: 11px; color: var(--ink-2);
+  background: var(--ground); border: 1px solid var(--rule);
+  padding: 3px 8px; border-radius: 2px; white-space: nowrap;
+}
+
+/* ---------- ledger ---------- */
+.ledger-scroll { overflow-x: auto; border: 1px solid var(--rule); background: var(--surface); }
+table.ledger {
+  border-collapse: collapse; width: 100%; min-width: 900px; font-size: 15px;
+  table-layout: fixed;
+}
+table.ledger col.c-cost { width: 13%; }
+table.ledger col.c-what { width: 52%; }
+table.ledger col.c-rule { width: 35%; }
+table.ledger th {
+  text-align: left; font-family: var(--display); font-weight: 700;
+  font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--ink-3); padding: 12px 16px; border-bottom: 1.5px solid var(--rule-hard);
+  white-space: nowrap;
+}
+table.ledger td { padding: 14px 16px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+table.ledger tr:last-child td { border-bottom: 0; }
+table.ledger .cost {
+  font-family: var(--display); font-weight: 700; font-size: 15px;
+  color: var(--rust); white-space: nowrap; font-variant-numeric: tabular-nums;
+}
+table.ledger .bar { display: block; height: 4px; background: var(--rust); margin-top: 6px; border-radius: 1px; opacity: 0.55; }
+table.ledger .guard { font-family: var(--mono); font-size: 12.5px; color: var(--steel); }
+table.ledger .what b { font-weight: 600; }
+
+/* ---------- operating notes ---------- */
+.notes { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); }
+.n-card { background: var(--surface); padding: 20px 22px 22px; }
+.n-card q {
+  display: block; font-family: var(--display); font-weight: 700;
+  font-size: 19px; line-height: 1.24; letter-spacing: -0.012em; quotes: none;
+}
+.n-card p { font-size: 15px; margin: 12px 0 0; color: var(--ink-2); max-width: none; }
+
+ul.plain { padding-left: 20px; max-width: var(--measure); }
+ul.plain li { margin-bottom: 8px; }
+
+footer {
+  margin-top: 76px; padding-top: 20px; border-top: 2px solid var(--ink);
+  font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.05em;
+  color: var(--ink-3); display: flex; flex-wrap: wrap; gap: 8px 24px;
+}
+
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+@media (max-width: 620px) {
+  .layer { grid-template-columns: 1fr; }
+  .layer > .idx { text-align: left; padding: 12px 22px 0; border-right: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<header class="mast">
+  <div class="kicker">
+    <span>TechLead Conf London — 23 Oct 2026</span>
+    <span>Adopting AI in Orgs</span>
+    <span><b>Full talk · 20 min</b></span>
+  </div>
+
+  <h1>The <em>Software</em> Factory</h1>
+
+  <p class="standfirst">I turned naive prompting across Claude Code, Codex and Pi Agent into a software factory: <b>a full development lifecycle where agents run the floor and the human runs the gates.</b><br/>
+
+  Today, 80% of my work is specs and  design, 10% is bugs and 10% is improving the factory pipeline itself. 
+  Although a single LLM session is not reliable, the Factory turns it into a trustworthy feature conveyor that ships directly into  production.
+  </p>
+
+  <div class="output">
+    <div><div class="n">88</div><div class="k">days<br>06 Jun → 02 Sep</div></div>
+    <div><div class="n">3,024</div><div class="k">commits<br>one per element</div></div>
+    <div><div class="n">889</div><div class="k">merged PRs<br>never squashed</div></div>
+    <div><div class="n">1</div><div class="k">developer<br>on the floor</div></div>
+  </div>
+</header>
+
+<!-- ============ THE FACTORY ============ -->
+<section>
+  <div class="shead"><span class="lbl">Section 01</span><h2>What the factory actually is</h2></div>
+
+  <p>Eight layers, in the order work moves through them. The numbering is real — this
+  is a pipeline, and an element cannot skip a stage. What matters is the
+  <span class="mono">OPERATOR</span> line on each: notice how few of them are still the
+  human, and notice which ones never stopped being the human.</p>
+
+  <div class="fig">
+    <p class="fig-cap">Lifecycle · principal artefacts · the two return paths</p>
+    <svg viewBox="0 0 1420 545" role="img" aria-labelledby="sfTitle sfDesc"
+         xmlns="http://www.w3.org/2000/svg" width="100%">
+      <title id="sfTitle">The software factory lifecycle</title>
+      <desc id="sfDesc">Eight stages in sequence — intake, design, dispatch, execution,
+      review, gates, release, reflection — with the four principal artefacts of each.
+      Reflection closes the loop by feeding two return paths: new process rules into the
+      standing law that constrains dispatch through gates, and new engineering work back
+      into the roadmap graph at intake. A tighter loop above the gates stage turns each
+      incident into a new mechanical check.</desc>
+
+      <style>
+        .sf-box   { fill: var(--surface); stroke: var(--rule-hard); stroke-width: 1; }
+        .sf-num   { font-family: var(--display); font-weight: 800; font-size: 14px; }
+        .sf-ttl   { font-family: var(--display); font-weight: 700; font-size: 15px;
+                    fill: var(--ink); letter-spacing: -0.01em; }
+        .sf-sub   { font-family: var(--mono); font-size: 9.5px; fill: var(--ink-3); }
+        .sf-op    { font-family: var(--mono); font-size: 8px; font-weight: 500;
+                    letter-spacing: 0.03em; }
+        .sf-canl  { font-family: var(--display); font-weight: 700; font-size: 9.5px;
+                    letter-spacing: 0.14em; fill: var(--ink-3); }
+        .sf-canv  { font-family: var(--mono); font-size: 11px; fill: var(--ink); }
+        .sf-canr  { stroke: var(--rule); stroke-width: 1; }
+        .sf-chip  { fill: var(--ground); stroke: var(--rule); stroke-width: 1; }
+        .sf-chipt { font-family: var(--mono); font-size: 9.5px; fill: var(--ink-2); }
+        .sf-flow  { stroke: var(--ink-3); stroke-width: 1.4; fill: none; }
+        .sf-law   { fill: var(--surface-2); stroke: var(--rust); stroke-width: 1; }
+        .sf-lawl  { font-family: var(--display); font-weight: 700; font-size: 10px;
+                    letter-spacing: 0.14em; fill: var(--rust); }
+        .sf-lawt  { font-family: var(--mono); font-size: 10px; fill: var(--ink-2); }
+        .sf-ret   { fill: none; stroke-width: 1.6; }
+        .sf-retl  { font-family: var(--mono); font-size: 10px; font-weight: 500;
+                    letter-spacing: 0.04em; }
+        .sf-legt  { font-family: var(--mono); font-size: 10px; fill: var(--ink-2); }
+        .sf-thesis{ font-family: var(--display); font-weight: 700; font-size: 12px; fill: var(--ink); }
+        .sf-human { fill: var(--rust); }
+        .sf-agent { fill: var(--accent); }
+        .sf-mach  { fill: var(--steel); }
+        .sf-s-human { stroke: var(--rust); }
+        .sf-s-agent { stroke: var(--accent); }
+        .sf-s-mach  { stroke: var(--steel); }
+      </style>
+
+      <defs>
+        <marker id="sfArrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0,0 L8,4 L0,8 z" fill="var(--ink-3)"/>
+        </marker>
+        <marker id="sfArrowA" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/>
+        </marker>
+        <marker id="sfArrowR" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0,0 L8,4 L0,8 z" fill="var(--rust)"/>
+        </marker>
+        <marker id="sfArrowM" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0,0 L8,4 L0,8 z" fill="var(--steel)"/>
+        </marker>
+      </defs>
+
+      <text x="965" y="34" class="sf-retl sf-mach" text-anchor="middle">incident → new check</text>
+      <path d="M 1012 88 C 1012 46, 918 46, 918 86" class="sf-ret sf-s-mach" marker-end="url(#sfArrowM)"/>
+
+      <rect class="sf-box" x="30" y="90" width="150" height="190"/>
+      <rect class="sf-human" x="30" y="90" width="150" height="4"/>
+      <text x="41" y="115" class="sf-num sf-human">01</text>
+      <text x="41" y="137" class="sf-ttl">Intake</text>
+      <text x="41" y="152" class="sf-sub">goal → graph</text>
+      <text x="41" y="169" class="sf-op sf-human">HUMAN · AGENTS ASSIST</text>
+      <rect class="sf-chip" x="40" y="180" width="130" height="17" rx="2"/>
+      <text x="46" y="192.5" class="sf-chipt">launch.graph.json</text>
+      <rect class="sf-chip" x="40" y="200" width="130" height="17" rx="2"/>
+      <text x="46" y="212.5" class="sf-chipt">402 nodes · DAG</text>
+      <rect class="sf-chip" x="40" y="220" width="130" height="17" rx="2"/>
+      <text x="46" y="232.5" class="sf-chipt">roadmap.py</text>
+      <rect class="sf-chip" x="40" y="240" width="130" height="17" rx="2"/>
+      <text x="46" y="252.5" class="sf-chipt">node_add.py</text>
+      <path d="M 184 180 H 196" class="sf-flow" marker-end="url(#sfArrow)"/>
+
+      <rect class="sf-box" x="202" y="90" width="150" height="190"/>
+      <rect class="sf-human" x="202" y="90" width="150" height="4"/>
+      <text x="213" y="115" class="sf-num sf-human">02</text>
+      <text x="213" y="137" class="sf-ttl">Design</text>
+      <text x="213" y="152" class="sf-sub">drafts → decisions</text>
+      <text x="213" y="169" class="sf-op sf-human">AGENT DRAFTS · HUMAN OKs</text>
+      <rect class="sf-chip" x="212" y="180" width="130" height="17" rx="2"/>
+      <text x="218" y="192.5" class="sf-chipt">roadmap_nodes/ ×115</text>
+      <rect class="sf-chip" x="212" y="200" width="130" height="17" rx="2"/>
+      <text x="218" y="212.5" class="sf-chipt">design.md ×58</text>
+      <rect class="sf-chip" x="212" y="220" width="130" height="17" rx="2"/>
+      <text x="218" y="232.5" class="sf-chipt">open_questions.md</text>
+      <rect class="sf-chip" x="212" y="240" width="130" height="17" rx="2"/>
+      <text x="218" y="252.5" class="sf-chipt">decisions.md ×21</text>
+      <path d="M 356 180 H 368" class="sf-flow" marker-end="url(#sfArrow)"/>
+
+      <rect class="sf-box" x="374" y="90" width="150" height="190"/>
+      <rect class="sf-agent" x="374" y="90" width="150" height="4"/>
+      <text x="385" y="115" class="sf-num sf-agent">03</text>
+      <text x="385" y="137" class="sf-ttl">Dispatch</text>
+      <text x="385" y="152" class="sf-sub">waves → lanes</text>
+      <text x="385" y="169" class="sf-op sf-agent">AGENT · GATE: INTERLOCK</text>
+      <rect class="sf-chip" x="384" y="180" width="130" height="17" rx="2"/>
+      <text x="390" y="192.5" class="sf-chipt">handover/CURRENT.md</text>
+      <rect class="sf-chip" x="384" y="200" width="130" height="17" rx="2"/>
+      <text x="390" y="212.5" class="sf-chipt">interlock_check.mjs</text>
+      <rect class="sf-chip" x="384" y="220" width="130" height="17" rx="2"/>
+      <text x="390" y="232.5" class="sf-chipt">worktree per lane</text>
+      <rect class="sf-chip" x="384" y="240" width="130" height="17" rx="2"/>
+      <text x="390" y="252.5" class="sf-chipt">&lt;database&gt;_test_&lt;lane&gt;</text>
+      <path d="M 528 180 H 540" class="sf-flow" marker-end="url(#sfArrow)"/>
+
+      <rect class="sf-box" x="546" y="90" width="150" height="190"/>
+      <rect class="sf-agent" x="546" y="90" width="150" height="4"/>
+      <text x="557" y="115" class="sf-num sf-agent">04</text>
+      <text x="557" y="137" class="sf-ttl">Execution</text>
+      <text x="557" y="152" class="sf-sub">1 element = 1 commit</text>
+      <text x="557" y="169" class="sf-op sf-agent">AGENT, ISOLATED</text>
+      <rect class="sf-chip" x="556" y="180" width="130" height="17" rx="2"/>
+      <text x="562" y="192.5" class="sf-chipt">MILESTONES_*.md ×67</text>
+      <rect class="sf-chip" x="556" y="200" width="130" height="17" rx="2"/>
+      <text x="562" y="212.5" class="sf-chipt">commit + docs</text>
+      <rect class="sf-chip" x="556" y="220" width="130" height="17" rx="2"/>
+      <text x="562" y="232.5" class="sf-chipt">merge, never squash</text>
+      <rect class="sf-chip" x="556" y="240" width="130" height="17" rx="2"/>
+      <text x="562" y="252.5" class="sf-chipt">.pi-lens.json</text>
+      <path d="M 700 180 H 712" class="sf-flow" marker-end="url(#sfArrow)"/>
+
+      <rect class="sf-box" x="718" y="90" width="150" height="190"/>
+      <rect class="sf-agent" x="718" y="90" width="150" height="4"/>
+      <text x="729" y="115" class="sf-num sf-agent">05</text>
+      <text x="729" y="137" class="sf-ttl">Review</text>
+      <text x="729" y="152" class="sf-sub">fresh context</text>
+      <text x="729" y="169" class="sf-op sf-agent">AGENT, READ-ONLY</text>
+      <rect class="sf-chip" x="728" y="180" width="130" height="17" rx="2"/>
+      <text x="734" y="192.5" class="sf-chipt">clean|nits|blockers</text>
+      <rect class="sf-chip" x="728" y="200" width="130" height="17" rx="2"/>
+      <text x="734" y="212.5" class="sf-chipt">file-only reports</text>
+      <rect class="sf-chip" x="728" y="220" width="130" height="17" rx="2"/>
+      <text x="734" y="232.5" class="sf-chipt">cross-model on full</text>
+      <rect class="sf-chip" x="728" y="240" width="130" height="17" rx="2"/>
+      <text x="734" y="252.5" class="sf-chipt">screenshot.mjs</text>
+      <path d="M 872 180 H 884" class="sf-flow" marker-end="url(#sfArrow)"/>
+
+      <rect class="sf-box" x="890" y="90" width="150" height="190"/>
+      <rect class="sf-mach" x="890" y="90" width="150" height="4"/>
+      <text x="901" y="115" class="sf-num sf-mach">06</text>
+      <text x="901" y="137" class="sf-ttl">Gates</text>
+      <text x="901" y="152" class="sf-sub">rule → command</text>
+      <text x="901" y="169" class="sf-op sf-mach">MACHINE, UNCONDITIONAL</text>
+      <rect class="sf-chip" x="900" y="180" width="130" height="17" rx="2"/>
+      <text x="906" y="192.5" class="sf-chipt">session-preflight.sh</text>
+      <rect class="sf-chip" x="900" y="200" width="130" height="17" rx="2"/>
+      <text x="906" y="212.5" class="sf-chipt">worktree-build.sh</text>
+      <rect class="sf-chip" x="900" y="220" width="130" height="17" rx="2"/>
+      <text x="906" y="232.5" class="sf-chipt">wiring-registry.json</text>
+      <rect class="sf-chip" x="900" y="240" width="130" height="17" rx="2"/>
+      <text x="906" y="252.5" class="sf-chipt">barrel-client-safety</text>
+      <path d="M 1044 180 H 1056" class="sf-flow" marker-end="url(#sfArrow)"/>
+
+      <rect class="sf-box" x="1062" y="90" width="150" height="190"/>
+      <rect class="sf-human" x="1062" y="90" width="150" height="4"/>
+      <text x="1073" y="115" class="sf-num sf-human">07</text>
+      <text x="1073" y="137" class="sf-ttl">Release</text>
+      <text x="1073" y="152" class="sf-sub">stage → main</text>
+      <text x="1073" y="169" class="sf-op sf-human">HUMAN AUTHORISES</text>
+      <rect class="sf-chip" x="1072" y="180" width="130" height="17" rx="2"/>
+      <text x="1078" y="192.5" class="sf-chipt">changelog ×2 forms</text>
+      <rect class="sf-chip" x="1072" y="200" width="130" height="17" rx="2"/>
+      <text x="1078" y="212.5" class="sf-chipt">release_checklist.sh</text>
+      <rect class="sf-chip" x="1072" y="220" width="130" height="17" rx="2"/>
+      <text x="1078" y="232.5" class="sf-chipt">deploy-smoke</text>
+      <rect class="sf-chip" x="1072" y="240" width="130" height="17" rx="2"/>
+      <text x="1078" y="252.5" class="sf-chipt">tag v&lt;date&gt;</text>
+      <path d="M 1216 180 H 1228" class="sf-flow" marker-end="url(#sfArrow)"/>
+
+      <rect class="sf-box" x="1234" y="90" width="150" height="190"/>
+      <rect class="sf-human" x="1234" y="90" width="150" height="4"/>
+      <text x="1245" y="115" class="sf-num sf-human">08</text>
+      <text x="1245" y="137" class="sf-ttl">Reflection</text>
+      <text x="1245" y="152" class="sf-sub">rewrite the manual</text>
+      <text x="1245" y="169" class="sf-op sf-human">AGENT WRITES · HUMAN OK</text>
+      <rect class="sf-chip" x="1244" y="180" width="130" height="17" rx="2"/>
+      <text x="1250" y="192.5" class="sf-chipt">proposals.md</text>
+      <rect class="sf-chip" x="1244" y="200" width="130" height="17" rx="2"/>
+      <text x="1250" y="212.5" class="sf-chipt">reflections.json</text>
+      <rect class="sf-chip" x="1244" y="220" width="130" height="17" rx="2"/>
+      <text x="1250" y="232.5" class="sf-chipt">verdicts.json ✎</text>
+      <rect class="sf-chip" x="1244" y="240" width="130" height="17" rx="2"/>
+      <text x="1250" y="252.5" class="sf-chipt">436 props · 88 ✓</text>
+
+      <rect class="sf-law" x="374" y="320" width="666" height="42"/>
+      <text x="390" y="336" class="sf-lawl">STANDING LAW</text>
+      <text x="390" y="353" class="sf-lawt">AGENTS.md · process_subagent_orchestration.md · runbook_start_dev.md</text>
+      <path d="M 449 318 V 290" class="sf-ret sf-s-human" marker-end="url(#sfArrowR)"/>
+      <path d="M 621 318 V 290" class="sf-ret sf-s-human" marker-end="url(#sfArrowR)"/>
+      <path d="M 793 318 V 290" class="sf-ret sf-s-human" marker-end="url(#sfArrowR)"/>
+      <path d="M 965 318 V 290" class="sf-ret sf-s-human" marker-end="url(#sfArrowR)"/>
+
+      <path d="M 1309 284 V 341 H 1052" class="sf-ret sf-s-human" marker-end="url(#sfArrowR)"/>
+      <text x="1180" y="333" class="sf-retl sf-human" text-anchor="middle">new rule</text>
+
+      <path d="M 1309 341 V 440 H 105 V 292" class="sf-ret sf-s-agent" marker-end="url(#sfArrowA)"/>
+      <text x="700" y="432" class="sf-retl sf-agent" text-anchor="middle">new node → graph.json · the loop closes</text>
+
+      <rect class="sf-human" x="30"  y="478" width="22" height="4"/>
+      <text x="60"  y="484" class="sf-legt">human holds authority</text>
+      <rect class="sf-agent" x="220" y="478" width="22" height="4"/>
+      <text x="250" y="484" class="sf-legt">agent operates</text>
+      <rect class="sf-mach" x="380" y="478" width="22" height="4"/>
+      <text x="410" y="484" class="sf-legt">machine, unconditional</text>
+      <text x="1384" y="484" class="sf-thesis" text-anchor="end">Agents run the floor. The human runs the gates.</text>
+
+      <line x1="30" y1="504" x2="1384" y2="504" class="sf-canr"/>
+      <text x="30" y="527">
+        <tspan class="sf-canl">THE LAW</tspan>
+        <tspan class="sf-canv" dx="12">process_subagent_orchestration.md · 437 lines</tspan>
+        <tspan class="sf-canl" dx="46">THE GRAPH</tspan>
+        <tspan class="sf-canv" dx="12">launch.graph.json · 402 nodes</tspan>
+      </text>
+    </svg>
+  </div>
+
+  <div class="stack">
+
+    <div class="layer">
+      <div class="idx">1</div>
+      <div class="lbody">
+        <h3>Intake — goal becomes a graph</h3>
+        <div class="who">Operator: <b>human</b> · agents assist</div>
+        <p>A goal is decomposed into a machine-readable dependency graph: 402 nodes,
+        each with a criticality tier, a hard calendar horizon, an <code>evidence</code>
+        pointer and explicit <code>blockers</code> edges. Non-technical work — legal,
+        methodology, org — sits in the same graph as the code, because it blocks the same
+        launch. The roadmap is a data structure, not a document, so a machine can
+        topologically sort it and a machine can be wrong about it in a way you can check.</p>
+        <div class="arts"><span>launch.graph.json</span><span>roadmap_nodes/ ×115</span><span>orchestrator/roadmap.py</span></div>
+      </div>
+    </div>
+
+    <div class="layer">
+      <div class="idx">2</div>
+      <div class="lbody">
+        <h3>Design — the autonomous pre-session</h3>
+        <div class="who">Operator: agent · <b>decisions: human only</b></div>
+        <p>Before any question reaches me, an agent runs a design session against the
+        code and docs and produces <i>answers with justifications</i> — not a list of
+        questions. I approve or correct. This inverted the worst part of the loop:
+        I stopped being an oracle answering from scratch and became a reviewer of
+        drafts, which is a far cheaper mental posture.</p>
+        <p>The hardest rule in the entire system lives here: <b>the orchestrator never
+        decides for the user.</b> It is written down because it was violated — an agent
+        recorded its own defaults as "accepted" before I had replied, and two rounds of
+        rework followed.</p>
+        <div class="arts"><span>open_questions.md</span><span>schema-gaps per question</span><span>decisions.md</span></div>
+      </div>
+    </div>
+
+    <div class="layer">
+      <div class="idx">3</div>
+      <div class="lbody">
+        <h3>Dispatch — waves, lanes, and interlocks</h3>
+        <div class="who">Operator: agent · <i>gate: interlock check</i></div>
+        <p>Ready nodes are sorted into waves and split into lanes. Each lane gets its own
+        git worktree, its own branch, and — for backend lanes — <b>its own Postgres
+        database</b>, because two lanes sharing one test database deadlocked twice in a
+        day. Before dispatch, an interlock check diffs the lane's file set against every
+        open pull request; a collision on a generated file is resolved on paper, in the
+        task brief, rather than at merge time.</p>
+        <p>Ceremony is <b>tiered by risk</b>, not uniform. <span class="mono">standard</span>
+        lanes get one reviewer and a typecheck. <span class="mono">full</span> lanes —
+        migrations, anything data-bearing, anything production-critical — get two
+        independent reviewers on different models, real Postgres tests, screenshot
+        validation, and a full reflection cycle.</p>
+        <div class="arts"><span>interlock_check.mjs</span><span>LaneSpec.tier</span><span>&lt;database&gt;_test_&lt;lane&gt;</span></div>
+      </div>
+    </div>
+
+    <div class="layer">
+      <div class="idx">4</div>
+      <div class="lbody">
+        <h3>Execution — one element, one commit</h3>
+        <div class="who">Operator: agent, isolated</div>
+        <p>An implementer agent works a single element to completion and commits it,
+        together with the documentation that describes it, in the same commit. The
+        target element size is twenty to thirty minutes — chosen deliberately, because
+        <b>the granularity of a commit is the granularity at which a human can interrupt
+        the factory.</b> Nothing is squashed, ever: the commit history is the project
+        journal, and 889 merges preserve it.</p>
+        <div class="arts"><span>worktree per lane</span><span>merge commits only</span><span>docs in the same commit</span></div>
+      </div>
+    </div>
+
+    <div class="layer">
+      <div class="idx">5</div>
+      <div class="lbody">
+        <h3>Review — non-blocking, fresh context, cross-model</h3>
+        <div class="who">Operator: agent, read-only</div>
+        <p>After each element a reviewer launches with a <i>clean context window</i> —
+        it has not seen the implementer's reasoning, so it cannot be anchored by it —
+        and read-only permissions. It does not block the chain: the verdict lands in
+        the task journal, blockers to the top of the next iteration, nits to the bottom.
+        An element is not <span class="mono">done</span> until a verdict is recorded.</p>
+        <p>High-risk lanes get two reviewers on <b>different model families</b>. This
+        earns its cost in a specific way: they catch each other's false positives. One
+        reviewer raised a route-precedence blocker that the other disproved from the
+        code — without the second opinion I'd have paid for a fix to a non-bug.</p>
+        <div class="arts"><span>verdict: clean | nits | blockers</span><span>file-only reports</span><span>consolidator on disagreement</span></div>
+      </div>
+    </div>
+
+    <div class="layer">
+      <div class="idx">6</div>
+      <div class="lbody">
+        <h3>Gates — every incident becomes a command</h3>
+        <div class="who">Operator: <i>machine, unconditionally</i></div>
+        <p>This is the layer that separates a factory from a very fast intern. A rule
+        that lives in a prompt is a rule the model will forget on the fortieth turn.
+        So each incident is converted into something that <i>runs</i>: a preflight check,
+        a git hook, a millisecond unit test, a generated-artifact drift check. The
+        prose survives only as the explanation of the command.</p>
+        <p>The gate ladder ends at production reality, and the ordering rule is blunt:
+        <b>compiling is not building, and building is not working.</b> A type-check
+        cannot see a Server/Client boundary; only the bundler can. A green suite on
+        SQLite proves nothing about Postgres. A migration that aborts doesn't degrade
+        the service — it crash-loops it forever, because the container's start command
+        is <code>alembic upgrade head &amp;&amp; uvicorn</code>.</p>
+        <div class="arts"><span>session-preflight.sh</span><span>worktree-build.sh</span><span>barrel-client-safety.test.ts</span><span>wiring_registry --check</span><span>alembic heads == 1</span></div>
+      </div>
+    </div>
+
+    <div class="layer">
+      <div class="idx">7</div>
+      <div class="lbody">
+        <h3>Release — stage becomes main</h3>
+        <div class="who">Operator: <b>human authorises</b></div>
+        <p>Waves do not merge into <code>main</code>. They accumulate on an integration
+        branch, <code>stage</code>, which a preview environment tracks; <code>main</code>
+        moves only by an explicit release merge. That merge is one of the two things I
+        never delegate, because it is the point at which a mistake reaches people.</p>
+        <p>The release itself is mechanical: a changelog in two formats — one written for
+        users, one for the team — generated from the commit range, then the merge, then
+        a smoke test against production, then a dated tag. The ordering matters. After
+        a merge, <b>nothing but the smoke test proves the state of production</b>; a
+        green pipeline describes the code that was pushed, not the service that came up.</p>
+        <div class="arts"><span>release_stage_to_main.md</span><span>changelog.mjs</span><span>release_checklist.sh</span><span>deploy-smoke</span><span>tag v&lt;date&gt;</span></div>
+      </div>
+    </div>
+
+    <div class="layer">
+      <div class="idx">8</div>
+      <div class="lbody">
+        <h3>Reflection — the factory rewrites its own manual</h3>
+        <div class="who">Operator: agent writes · <b>human authorises</b></div>
+        <p>A reflection is mandatory after every wave and every incident. Sessions write
+        proposals; a script harvests them into a machine registry; a consolidator
+        de-duplicates and scores them; and then exactly one step stays manual — <b>I
+        authorise the verdicts.</b> Approved proposals route automatically: a process
+        rule goes into the law file, an engineering change becomes a new node in the
+        roadmap graph, everything else is explicitly deferred or rejected on the record.</p>
+        <p>81 cycles have produced 436 proposals. 88 shipped, 24 authorised and queued,
+        59 deferred with a reason, 12 rejected. That ratio is the point: the loop is
+        real precisely because most proposals lose.</p>
+        <div class="arts"><span>reflections.json</span><span>reflection_verdicts.json</span><span>node_add.py</span><span>backlog: generated</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <h3>The two things that are still, non-negotiably, human</h3>
+  <ul class="plain">
+    <li><b>Irreversible decisions.</b> Production, deployment, direction. Merging a green
+    pull request is not one of these, and moving it out of the human queue was the single
+    biggest throughput unlock — it freed the actual scarce resource, which is my attention.</li>
+    <li><b>The verdict on what the factory learns about itself.</b> Agents propose process
+    changes; only I approve them. Otherwise the system optimises its own rules toward
+    whatever is easiest for it to satisfy.</li>
+  </ul>
+</section>
+
+<!-- ============ LEDGER ============ -->
+<section>
+  <div class="shead"><span class="lbl">Section 02</span><h2>The incident ledger</h2></div>
+
+  <p>Every guardrail in the factory has a receipt. This is the evidence bank — and it is
+  the reason none of this is hype. Each row is one incident, what it cost in hours or
+  outages, and the check it turned into.</p>
+
+  <div class="ledger-scroll">
+  <table class="ledger">
+    <colgroup>
+      <col class="c-cost">
+      <col class="c-what">
+      <col class="c-rule">
+    </colgroup>
+    <thead>
+      <tr><th>Cost</th><th>What happened</th><th>The rule it bought</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="cost">6.8 h<span class="bar" style="width:100%"></span></td>
+        <td class="what"><b>A rebase waited for an editor that could not exist.</b>
+        <code>git rebase --continue</code> in a headless session tried to open a commit
+        message; no TTY, no timeout, no output. It hung for most of a working day before
+        the timeout killed it and the rebase state was lost.</td>
+        <td class="guard">GIT_EDITOR=true on every git operation, set in the session
+        environment — not remembered by the agent.</td>
+      </tr>
+      <tr>
+        <td class="cost">Outage<span class="bar" style="width:78%"></span></td>
+        <td class="what"><b>A barrel file shipped a server component to 25 client
+        components.</b> An <code>index.ts</code> re-exported a module that imported
+        <code>next/headers</code>. Re-export drags the whole module, not the named symbol.
+        Type-check was green. Production was down until rollback.</td>
+        <td class="guard">A real <code>next build</code> is a required done-criterion for
+        any lane touching a barrel, a dynamic route or a directive — plus a unit test that
+        asserts barrel client-safety in milliseconds.</td>
+      </tr>
+      <tr>
+        <td class="cost">Crash-loop<span class="bar" style="width:74%"></span></td>
+        <td class="what"><b>The guard worked correctly, and that is why production
+        wouldn't boot.</b> A data-bearing migration refused to apply because 10 real rows
+        violated the new constraint. Synthetic fixtures had all passed. The start command
+        runs migrations before the server, so the backend never came up.</td>
+        <td class="guard">Read-only query against production data before merging any
+        data-bearing migration. Backfill first, then merge — never the other way round.</td>
+      </tr>
+      <tr>
+        <td class="cost">47 min<span class="bar" style="width:52%"></span></td>
+        <td class="what"><b>Two parallel lanes deadlocked on one test database.</b> Both
+        ran <code>drop_all</code>/<code>create_all</code> against the same schema; lock
+        contention hung both suites with no error, twice in one day.</td>
+        <td class="guard">One database per lane, named in the task brief. Parallelism is
+        counted in shared resources, not in agents.</td>
+      </tr>
+      <tr>
+        <td class="cost">32 min<span class="bar" style="width:38%"></span></td>
+        <td class="what"><b>A file was edited but never staged.</b> Everything built
+        locally — the change was in the working tree. What merged was an incompatible
+        pair of props. Production stopped deploying.</td>
+        <td class="guard"><code>git show --stat HEAD</code> after every commit.
+        An uncommitted change is not in the pull request.</td>
+      </tr>
+      <tr>
+        <td class="cost">38 / 39<span class="bar" style="width:34%"></span></td>
+        <td class="what"><b>Teardown wasn't in the definition of done.</b> Session briefs
+        said <code>worktree add</code> and never said <code>worktree remove</code>. Of 39
+        registered worktrees, 38 were dead — plus one 275 MB directory that outlived its
+        own metadata and broke git operations.</td>
+        <td class="guard">Teardown is part of "done", in the checklist of the final
+        element — not a cleanup task that never gets scheduled.</td>
+      </tr>
+      <tr>
+        <td class="cost">Data loss<span class="bar" style="width:30%"></span></td>
+        <td class="what"><b>The orchestrator deleted the user's live worktrees.</b> Their
+        registered paths pointed at the host filesystem, invisible from inside the
+        container — so they looked like stale garbage. They were locked, active, and had
+        uncommitted work in them.</td>
+        <td class="guard">Never delete an untracked path without explicit confirmation.
+        Check lock files and live processes first. Prune only from the environment that
+        owns the paths.</td>
+      </tr>
+      <tr>
+        <td class="cost">460/day<span class="bar" style="width:26%"></span></td>
+        <td class="what"><b>The CI bill outran the plan.</b> 1,101 CI-minutes in 2.4 days,
+        <i>after</i> path filters were already in place. Agent throughput turns CI from a
+        background cost into the binding constraint.</td>
+        <td class="guard">Heavy gates run only on an explicit label, applied
+        <i>before</i> the final push. Local verification became the primary proof, not the
+        fallback.</td>
+      </tr>
+      <tr>
+        <td class="cost">Silent<span class="bar" style="width:22%"></span></td>
+        <td class="what"><b>"440 passed" against Postgres was actually SQLite in memory.</b>
+        The environment variable was set; the engine was never reached. Three levels of
+        false confidence — done, verified, works — collapsed into one production incident.</td>
+        <td class="guard">Every test report must state the engine it actually ran on.
+        A label is not evidence.</td>
+      </tr>
+      <tr>
+        <td class="cost">×2<span class="bar" style="width:16%"></span></td>
+        <td class="what"><b>A gate that did not run looked like a gate that passed.</b>
+        Two pull requests reached production showing <code>skipped</code>, which in a
+        checks list sits one pixel away from success. Both layers of the product went
+        down.</td>
+        <td class="guard"><b>skipping ≠ pass.</b> Readiness is the last run for the head
+        SHA with conclusion <code>success</code>, queried explicitly. Nothing else counts.</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p class="note" style="margin-top:18px">Two smaller ones worth telling: seven parallel
+  design sessions exhausted the container's process limit (512) — parallelism has to be
+  counted in PIDs, not just RAM; and a default 60-second "needs attention" timer fired
+  ~15 false alarms in a single run, because a full test suite looks exactly like a stuck
+  agent from the outside.</p>
+</section>
+
+<!-- ============ OPERATING NOTES ============ -->
+<section>
+  <div class="shead"><span class="lbl">Section 03</span><h2>Operating notes</h2></div>
+
+  <p>The load-bearing sentences of the process document. Each one is short enough for a
+  slide and defensible from the ledger above.</p>
+
+  <div class="notes">
+    <div class="n-card">
+      <q>Mechanical work goes to machines. If a rule can be checked by a command, it must be a command — not a paragraph in a prompt.</q>
+      <p>The founding principle of the gate layer. Everything else follows from it.</p>
+    </div>
+    <div class="n-card">
+      <q>A prompt is forgotten on the fortieth turn. A script is not.</q>
+      <p>Why 117 lines of process law became a preflight script and a set of hooks.</p>
+    </div>
+    <div class="n-card">
+      <q>Done ≠ verified ≠ works.</q>
+      <p>Three separate levels of false confidence. Each needs its own explicit proof.</p>
+    </div>
+    <div class="n-card">
+      <q>A human gate belongs only where the decision is irreversible.</q>
+      <p>The rule that reclaims the scarce resource: attention, not compute.</p>
+    </div>
+    <div class="n-card">
+      <q>The dispatcher's context is a consumable. What isn't written down doesn't exist.</q>
+      <p>Designing for amnesia is what makes the factory restartable at any moment.</p>
+    </div>
+    <div class="n-card">
+      <q>The granularity of interruption is one commit.</q>
+      <p>Which is why the element size is 20–30 minutes. Human control, quantified.</p>
+    </div>
+    <div class="n-card">
+      <q>State, not events. Everything passed between layers is a current desired state — readable twice, or skippable once, without consequence.</q>
+      <p>Removes acknowledgement races and lost messages from agent coordination.</p>
+    </div>
+    <div class="n-card">
+      <q>A gate that didn't run is not evidence.</q>
+      <p>Bought with two production outages in one afternoon.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>The Software Factory</span>
+  <span>Figures verified against the repository at <span class="mono">610a7c16</span>, 02 Sep 2026</span>
+</footer>
+
+</div>
+
+</body>
+</html>
