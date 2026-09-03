@@ -2,7 +2,7 @@
 
 A full development lifecycle where **agents run the floor and the human runs the gates**.
 
-<img src="software-factory.svg" alt="The software factory lifecycle: eight stages from intake to reflection, with the two return paths" width="100%">
+<img src="docs/software-factory.svg" alt="The software factory lifecycle: eight stages from intake to reflection, with the two return paths" width="100%">
 
 ---------------- 
 
@@ -30,4 +30,4 @@ Notice how few operators are still the human — and which ones never stopped be
 Reflection closes the loop along two return paths: new process rules into the standing law,
 new engineering work back into the roadmap graph.
 
-**[Read the full write-up →](software-factory.html)** — talk given at TechLead Conf London, 23 Oct 2026.
+**[Read the full write-up →](https://saintnikopol.github.io/software-factory/)** — talk given at TechLead Conf London, 23 Oct 2026.
